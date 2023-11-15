@@ -66,4 +66,25 @@ public class OutputView {
 
         printStream.println("");
     }
+    
+    public void viewBenefits(Orders orders) {
+        Map<String, Integer> benefits = orders.getBenefits();
+        Map<String, Integer> givenBenefit = orders.getGivenBenefit();
+        
+        printStream.println("<혜택 내역>");
+
+        if (benefits.size() == 0) {
+            printStream.println(NO_ITEM);
+            printStream.println("");
+            return;
+        }
+        
+        for(Map.Entry<String, Integer> benefit: benefits.entrySet()) {
+            printStream.println(benefit.getKey() + ": -" + DECIMAL_FORMAT.format(benefit.getValue()) + "원");
+        }
+
+        if (givenBenefit != null && givenBenefit.size() != 0) printStream.println(GivenEvent.EVENT_NAME + ": -" + DECIMAL_FORMAT.format(givenBenefit.get(Menu.CHAMPAGNE.getName())) + "원");
+
+        printStream.println("");
+    }
 }
