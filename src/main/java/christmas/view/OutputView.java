@@ -87,4 +87,19 @@ public class OutputView {
 
         printStream.println("");
     }
+    
+    public void viewTotalBenefit(Orders orders) {
+        Integer totalBenefits = orders.getTotalBenefits();
+
+        printStream.println("<총혜택 금액>");
+
+        if (totalBenefits == 0) {
+            printStream.println("0원");
+            printStream.println("");
+            return;
+        }
+
+        printStream.println("-" + DECIMAL_FORMAT.format(totalBenefits) + "원");
+        printStream.println("");
+    }
 }
