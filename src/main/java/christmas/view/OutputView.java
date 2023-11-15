@@ -108,4 +108,19 @@ public class OutputView {
         printStream.println(DECIMAL_FORMAT.format(orders.getPayPrice()) + "원");
         printStream.println("");
     }
+
+    public void viewBadge(Orders orders) {
+        Badge badge = orders.getBadge();
+
+        printStream.println("<12월 이벤트 배지>");
+        
+        if(badge == null) {
+            printStream.println(NO_ITEM);
+            printStream.println("");
+            return;
+        }
+
+        printStream.println(badge.getBadgeName());
+        printStream.println("");
+    }
 }
