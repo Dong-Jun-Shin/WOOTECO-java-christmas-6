@@ -32,4 +32,14 @@ public class OutputView {
         printStream.println("12월 26일에 우테코 식당에서 받을 이벤트 혜택 미리 보기!");
         printStream.println("");
     }
+    
+    public void viewOrders(Orders orders) {
+        printStream.println("<주문 메뉴>");
+
+        for (Map.Entry<String, Integer> order: orders.getOrders().entrySet()) {
+            printStream.println(order.getKey() + " " + order.getValue() + "개");
+        }
+
+        printStream.println("");
+    }
 }
