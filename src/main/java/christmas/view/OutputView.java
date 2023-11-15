@@ -73,7 +73,7 @@ public class OutputView {
         
         printStream.println("<혜택 내역>");
 
-        if (benefits.size() == 0) {
+        if (benefits == null || benefits.size() == 0) {
             printStream.println(NO_ITEM);
             printStream.println("");
             return;

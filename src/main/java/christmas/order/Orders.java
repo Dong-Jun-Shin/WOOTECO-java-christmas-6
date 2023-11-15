@@ -63,6 +63,10 @@ public class Orders {
     public Integer getTotalDiscount() {
         int totalDiscount = 0;
 
+        if (benefits == null || benefits.size() == 0) {
+            return 0;
+        }
+
         for(Integer benefitValue: benefits.values()) {
             totalDiscount += benefitValue;
         }
