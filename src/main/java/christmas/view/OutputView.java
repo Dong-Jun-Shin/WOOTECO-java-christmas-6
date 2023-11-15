@@ -42,4 +42,10 @@ public class OutputView {
 
         printStream.println("");
     }
+    
+    public void viewTotalPrice(Orders orders) {
+        printStream.println("<할인 전 총주문 금액>");
+        printStream.println(DECIMAL_FORMAT.format(orders.getTotalPrice()) + "원");
+        printStream.println("");
+    }
 }
