@@ -48,4 +48,22 @@ public class OutputView {
         printStream.println(DECIMAL_FORMAT.format(orders.getTotalPrice()) + "원");
         printStream.println("");
     }
+    
+    public void viewGivenBenefit(Orders orders) {
+        Map<String, Integer> givenBenefit = orders.getGivenBenefit();
+
+        printStream.println("<증정 메뉴>");
+        
+        if (givenBenefit == null || givenBenefit.size() == 0) {
+            printStream.println(NO_ITEM);
+            printStream.println("");
+            return;
+        }
+        
+        for(Map.Entry<String, Integer> benefit: givenBenefit.entrySet()) {
+            printStream.println(benefit.getKey() + " 1개");
+        }
+
+        printStream.println("");
+    }
 }
