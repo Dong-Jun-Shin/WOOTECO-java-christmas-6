@@ -102,4 +102,10 @@ public class OutputView {
         printStream.println("-" + DECIMAL_FORMAT.format(totalBenefits) + "원");
         printStream.println("");
     }
+
+    public void viewPayPrice(Orders orders) {
+        printStream.println("<할인 후 예상 결제 금액>");
+        printStream.println(DECIMAL_FORMAT.format(orders.getPayPrice()) + "원");
+        printStream.println("");
+    }
 }
