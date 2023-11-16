@@ -5,6 +5,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import camp.nextstep.edu.missionutils.test.NsTest;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 class ApplicationTest extends NsTest {
     private static final String LINE_SEPARATOR = System.lineSeparator();
@@ -26,6 +28,97 @@ class ApplicationTest extends NsTest {
     }
 
     @Test
+    void 모든_할인_혜택_출력() {
+        assertSimpleTest(() -> {
+            run("3", "티본스테이크-1,바비큐립-1,초코케이크-2,제로콜라-1");
+            assertThat(output()).contains(
+                "<주문 메뉴>",
+                "<할인 전 총주문 금액>" + LINE_SEPARATOR + "142,000원",
+                "<증정 메뉴>" + LINE_SEPARATOR + "샴페인 1개",
+                "크리스마스 디데이 할인: -1,200원",
+                "평일 할인: -4,046원",
+                "특별 할인: -1,000원",
+                "증정 이벤트: -25,000원",
+                "<총혜택 금액>" + LINE_SEPARATOR + "-31,246원",
+                "<할인 후 예상 결제 금액>" + LINE_SEPARATOR + "135,754원",
+                "<12월 이벤트 배지>" + LINE_SEPARATOR + "산타"
+            );
+        });
+    }
+
+    @ValueSource(strings = {
+            "26",
+            "27",
+            "28",
+            "29",
+            "30",
+            "31"
+    })
+    @ParameterizedTest
+    void 크리스마스_디데이_제외_타이틀_출력() {
+        assertSimpleTest(() -> {
+            run("26", "티본스테이크-1,바비큐립-1,초코케이크-2,제로콜라-1");
+            assertThat(output()).doesNotContain("크리스마스 디데이 할인:");
+        });
+    }
+
+    @Test
+    void 평일_할인_제외_타이틀_출력() {
+        assertSimpleTest(() -> {
+            run("1", "티본스테이크-1,바비큐립-1,초코케이크-2,제로콜라-1");
+            assertThat(output()).doesNotContain("평일 할인:");
+        });
+    }
+
+    @Test
+    void 주말_할인_제외_타이틀_출력() {
+        assertSimpleTest(() -> {
+            run("3", "티본스테이크-1,바비큐립-1,초코케이크-2,제로콜라-1");
+            assertThat(output()).doesNotContain("주말 할인:");
+        });
+    }
+
+    @Test
+    void 특별_할인_제외_타이틀_출력() {
+        assertSimpleTest(() -> {
+            run("4", "티본스테이크-1,바비큐립-1,초코케이크-2,제로콜라-1");
+            assertThat(output()).doesNotContain("특별 할인:");
+        });
+    }
+
+    @Test
+    void 증정_이벤트_제외_타이틀_출력() {
+        assertSimpleTest(() -> {
+            run("26", "타파스-1,제로콜라-1");
+            assertThat(output()).doesNotContain("증정 이벤트:");
+        });
+    }
+
+    @Test
+    void 배지_별_출력() {
+        assertSimpleTest(() -> {
+            run("23", "티본스테이크-1,제로콜라-1");
+            assertThat(output()).contains("<12월 이벤트 배지>" + LINE_SEPARATOR + "별");
+        });
+    }
+    
+    @Test
+    void 배지_트리_출력() {
+        assertSimpleTest(() -> {
+            run("23", "크리스마스파스타-4,제로콜라-1");
+            assertThat(output()).contains("<12월 이벤트 배지>" + LINE_SEPARATOR + "트리");
+        });
+    }
+    
+    @Test
+    void 배지_산타_출력() {
+        assertSimpleTest(() -> {
+            run("23", "티본스테이크-2,레드와인-1");
+            assertThat(output()).contains("<12월 이벤트 배지>" + LINE_SEPARATOR + "산타");
+        });
+    }
+    
+    @Test
     void 혜택_내역_없음_출력() {
         assertSimpleTest(() -> {
             run("26", "타파스-1,제로콜라-1");
@@ -34,20 +127,65 @@ class ApplicationTest extends NsTest {
     }
 
     @Test
-    void 날짜_예외_테스트() {
+    void 증정_메뉴_없음_출력() {
         assertSimpleTest(() -> {
-            runException("a");
-            assertThat(output()).contains("[ERROR] 유효하지 않은 날짜입니다. 다시 입력해 주세요.");
+            run("26", "타파스-1,제로콜라-1");
+            assertThat(output()).contains("<증정 메뉴>" + LINE_SEPARATOR + "없음");
         });
     }
 
     @Test
-    void 주문_예외_테스트() {
+    void 총혜택_금액_0원_출력() {
         assertSimpleTest(() -> {
-            runException("3", "제로콜라-a");
+            run("26", "타파스-1,제로콜라-1");
+            assertThat(output()).contains("<총혜택 금액>" + LINE_SEPARATOR + "0원");
+        });
+    }
+
+    @Test
+    void 배지_없음_출력() {
+        assertSimpleTest(() -> {
+            run("26", "타파스-1,제로콜라-1");
+            assertThat(output()).contains("<12월 이벤트 배지>" + LINE_SEPARATOR + "없음");
+        });
+    }
+
+    @ValueSource(strings = {
+            "a",
+            "가",
+            "0",
+            "32"
+    })
+    @ParameterizedTest
+    void 날짜_예외_테스트(String visitDay) {
+        assertSimpleTest(() -> {
+            runException(visitDay);
+            assertThat(output()).contains("[ERROR] 유효하지 않은 날짜입니다. 다시 입력해 주세요.");
+        });
+    }
+
+    @ValueSource(strings = {
+        "1,1",
+        "타파스,제로콜라",
+        "1-타파스,1-제로콜라",
+        "타파스-1,제로콜라-1,",
+        "타파스-1,콜라-1",
+        "타파스-3,타파스-1",
+        "제로콜라-a",
+        "제로콜라-1",
+        "타파스-1,제로콜라-20",
+        "타파스-0,제로콜라-20",
+        "타파스-1, 제로콜라-19",
+    })
+    @ParameterizedTest
+    void 주문_예외_테스트(String orders) {
+        assertSimpleTest(() -> {
+            runException("3", orders);
             assertThat(output()).contains("[ERROR] 유효하지 않은 주문입니다. 다시 입력해 주세요.");
         });
     }
+
+
 
     @Override
     protected void runMain() {
